@@ -1,0 +1,20 @@
+{
+    "name": "jfusion/plugin-universal",
+    "type": "jfusion-plugin-universal",
+    "description": "Plugin for universal jfusion framework",
+    "keywords": ["jfusion", "plugin", "universal", "framework"],
+    "homepage": "https://github.com/jfusion/org.jfusion.plugin.universal",
+    "license": "GPL-2.0+",
+    "require": {
+        "php": ">=5.3.10"
+    },
+    "require-dev": {
+        "jfusion/framework": "~1",
+        "jfusion/platform-joomla": "~1"
+    },
+    "autoload": {
+        "psr-4": {
+            "JFusion\\Plugins\\universal\\": "."
+        }
+    }
+}
