@@ -1,10 +1,18 @@
 {
     "name": "jfusion/plugin-universal",
-    "type": "jfusion-plugin-universal",
+    "type": "jfusion-plugin",
     "description": "Plugin for universal jfusion framework",
-    "keywords": ["jfusion", "plugin", "universal", "framework"],
-    "homepage": "https://github.com/jfusion/org.jfusion.plugin.universal",
+    "keywords": ["jfusion", "plugin", "universal"],
+    "homepage": "http://jfusion.org",
     "license": "GPL-2.0+",
+    "authors": [
+        {
+            "name": "Morten Hundevad",
+            "email": "fannoj@gmail.com",
+            "homepage": "http://fanno.dk",
+            "role": "Developer"
+        }
+    ],
     "require": {
         "php": ">=5.3.10"
     },
