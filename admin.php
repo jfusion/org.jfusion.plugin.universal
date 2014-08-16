@@ -11,7 +11,6 @@
 
 use JFusion\Factory;
 use JFusion\Framework;
-use JFusion\Plugin\Plugin_Admin;
 
 use Joomla\Form\Html\Select;
 use Joomla\Language\Text;
