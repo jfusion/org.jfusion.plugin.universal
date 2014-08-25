@@ -9,6 +9,7 @@
  * @link       http://www.jfusion.org
  */
 
+use JFusion\Application\Application;
 use JFusion\Factory;
 use JFusion\Framework;
 use JFusion\Plugin\Platform\Joomla;
@@ -73,7 +74,7 @@ if(!isset($_COOKIE[\'jfusionframeless\']))';
 	 */
 	function showRedirectMod($name, $value, $node, $control_name)
 	{
-		$action = Factory::getApplication()->input->get('action');
+		$action = Application::getInstance()->input->get('action');
 		if ($action == 'redirectcode') {
 			$joomla_url = Factory::getParams('joomla_int')->get('source_url');
 			$joomla_itemid = $this->params->get('redirect_itemid');

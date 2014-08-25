@@ -59,9 +59,9 @@ class User extends \JFusion\Plugin\User
 			$field = $this->helper->getQuery(array('USERID', 'USERNAME', 'EMAIL', 'REALNAME', 'PASSWORD', 'SALT', 'GROUP', 'ACTIVE', 'INACTIVE', 'ACTIVECODE', 'FIRSTNAME', 'LASTNAME'));
 
 			$query = $db->getQuery(true)
-				->select($field)
-				->from('#__' . $this->helper->getTable())
-				->where($identifier_type . ' = ' . $db->quote($identifier));
+				->select($db->quoteName($field))
+				->from($db->quoteName('#__' . $this->helper->getTable()))
+				->where($db->quoteName($identifier_type) . ' = ' . $db->quote($identifier));
 
 			$db->setQuery($query);
 			$result = $db->loadObject();
@@ -96,9 +96,9 @@ class User extends \JFusion\Plugin\User
 					$field = $this->helper->getQuery(array('GROUP'), 'group');
 
 					$query = $db->getQuery(true)
-						->select($field)
-						->from('#__' . $groupt)
-						->where($userid->field . ' = ' . $db->quote($result->userid));
+						->select($db->quoteName($field))
+						->from($db->quoteName('#__' . $groupt))
+						->where($db->quoteName($userid->field) . ' = ' . $db->quote($result->userid));
 
 					$db->setQuery($query);
 					$result2 = $db->loadObject();
@@ -130,8 +130,8 @@ class User extends \JFusion\Plugin\User
 			$db = Factory::getDatabase($this->getJname());
 
 			$query = $db->getQuery(true)
-				->delete('#__' . $this->helper->getTable())
-				->where($userid->field . ' = ' . $db->quote($userinfo->userid));
+				->delete($db->quoteName('#__' . $this->helper->getTable()))
+				->where($db->quoteName($userid->field) . ' = ' . $db->quote($userinfo->userid));
 
 			$db->setQuery($query);
 			$db->execute();
@@ -141,8 +141,8 @@ class User extends \JFusion\Plugin\User
 				$userid = $this->helper->getFieldType('USERID', 'group');
 
 				$query = $db->getQuery(true)
-					->delete('#__' . $this->helper->getTable('group'))
-					->where($userid->field . ' = ' . $db->quote($userinfo->userid));
+					->delete($db->quoteName('#__' . $this->helper->getTable('group')))
+					->where($db->quoteName($userid->field) . ' = ' . $db->quote($userinfo->userid));
 
 				$maped = $this->helper->getMap('group');
 				foreach ($maped as $value) {
@@ -151,7 +151,7 @@ class User extends \JFusion\Plugin\User
 						switch ($type) {
 							case 'DEFAULT':
 								if ($value->fieldtype == 'VALUE') {
-									$query->where($field . ' = ' . $db->quote($value->value));
+									$query->where($db->quoteName($field) . ' = ' . $db->quote($value->value));
 								}
 								break;
 						}
@@ -223,26 +223,26 @@ class User extends \JFusion\Plugin\User
 			throw new RuntimeException(Text::_('UNIVERSAL_NO_PASSWORD_SET'));
 		} else {
 			$query = $db->getQuery(true)
-				->update('#__' . $this->helper->getTable());
+				->update($db->quoteName('#__' . $this->helper->getTable()));
 
 			foreach ($maped as $value) {
 				foreach ($value->type as $type) {
 					switch ($type) {
 						case 'PASSWORD':
-							$query->set($value->field . ' = ' . $db->quote($this->helper->getHashedPassword($value->fieldtype, $value->value, $userinfo)));
+							$query->set($db->quoteName($value->field) . ' = ' . $db->quote($this->helper->getHashedPassword($value->fieldtype, $value->value, $userinfo)));
 							break;
 						case 'SALT':
 							if (!isset($userinfo->password_salt)) {
-								$query->set($value->field . ' = ' . $db->quote($this->helper->getValue($value->fieldtype, $value->value, $userinfo)));
+								$query->set($db->quoteName($value->field) . ' = ' . $db->quote($this->helper->getValue($value->fieldtype, $value->value, $userinfo)));
 							} else {
-								$query->set($value->field . ' = ' . $db->quote($existinguser->password_salt));
+								$query->set($db->quoteName($value->field) . ' = ' . $db->quote($existinguser->password_salt));
 							}
 							break;
 					}
 				}
 			}
 
-			$query->where($userid->field . ' = ' . $db->quote($existinguser->userid));
+			$query->where($db->quoteName($userid->field) . ' = ' . $db->quote($existinguser->userid));
 
 			$db->setQuery($query);
 			$db->execute();
@@ -281,9 +281,9 @@ class User extends \JFusion\Plugin\User
 			$db = Factory::getDatabase($this->getJname());
 
 			$query = $db->getQuery(true)
-				->update('#__' . $this->helper->getTable())
-				->set($email->field . ' = ' . $db->quote($userinfo->email))
-				->where($userid->field . '=' . $db->quote($existinguser->userid));
+				->update($db->quoteName('#__' . $this->helper->getTable()))
+				->set($db->quoteName($email->field) . ' = ' . $db->quote($userinfo->email))
+				->where($db->quoteName($userid->field) . '=' . $db->quote($existinguser->userid));
 
 			$db->setQuery($query);
 			$db->execute();
@@ -328,9 +328,9 @@ class User extends \JFusion\Plugin\User
 				$usergroup = $usergroups[0];
 
 				$query = $db->getQuery(true)
-					->update('#__' . $table)
-					->set($group->field . ' = ' . $db->quote(base64_decode($usergroup)))
-					->where($userid->field . '=' . $db->quote($existinguser->userid));
+					->update($db->quoteName('#__' . $table))
+					->set($db->quoteName($group->field) . ' = ' . $db->quote(base64_decode($usergroup)))
+					->where($db->quoteName($userid->field) . '=' . $db->quote($existinguser->userid));
 
 				$db->setQuery($query);
 				$db->execute();
@@ -340,8 +340,8 @@ class User extends \JFusion\Plugin\User
 				$maped = $this->helper->getMap('group');
 
 				$query = $db->getQuery(true)
-					->delete('#__' . $this->helper->getTable('group'))
-					->where($userid->field . ' = ' . $db->quote($userinfo->userid));
+					->delete($db->quoteName('#__' . $this->helper->getTable('group')))
+					->where($db->quoteName($userid->field) . ' = ' . $db->quote($userinfo->userid));
 
 				foreach ($maped as $value) {
 					$field = $value->field;
@@ -349,7 +349,7 @@ class User extends \JFusion\Plugin\User
 						switch ($type) {
 							case 'DEFAULT':
 								if ($value->fieldtype == 'VALUE') {
-									$query->where($field . ' = ' . $db->quote($value->value));
+									$query->where($db->quoteName($field) . ' = ' . $db->quote($value->value));
 								}
 								break;
 						}
@@ -377,7 +377,7 @@ class User extends \JFusion\Plugin\User
 							}
 						}
 					}
-					$db->insertObject('#__' . $this->helper->getTable('group'), $addgroup );
+					$db->insertObject($db->quoteName('#__' . $this->helper->getTable('group')), $addgroup );
 
 					$this->debugger->addDebug(Text::_('GROUP_UPDATE') . ': ' . base64_decode($existinguser->group_id) . ' -> ' . base64_decode($usergroup));
 				}
@@ -423,9 +423,9 @@ class User extends \JFusion\Plugin\User
 				$db = Factory::getDatabase($this->getJname());
 
 				$query = $db->getQuery(true)
-					->update('#__' . $this->helper->getTable())
-					->set($active->field . ' = ' . $db->quote($userStatus))
-					->where($userid->field . ' = ' . $db->quote($existinguser->userid));
+					->update($db->quoteName('#__' . $this->helper->getTable()))
+					->set($db->quoteName($active->field) . ' = ' . $db->quote($userStatus))
+					->where($db->quoteName($userid->field) . ' = ' . $db->quote($existinguser->userid));
 
 				$db->setQuery($query);
 				$db->execute();
@@ -459,9 +459,9 @@ class User extends \JFusion\Plugin\User
 			$db = Factory::getDatabase($this->getJname());
 
 			$query = $db->getQuery(true)
-				->update('#__' . $this->helper->getTable())
-				->set($active->field . ' = ' . $db->quote($userStatus))
-				->where($userid->field . ' = ' . $db->quote($existinguser->userid));
+				->update($db->quoteName('#__' . $this->helper->getTable()))
+				->set($db->quoteName($active->field) . ' = ' . $db->quote($userStatus))
+				->where($db->quoteName($userid->field) . ' = ' . $db->quote($existinguser->userid));
 
 			$db->setQuery($query);
 			$db->execute();
@@ -489,9 +489,9 @@ class User extends \JFusion\Plugin\User
 			$db = Factory::getDatabase($this->getJname());
 
 			$query = $db->getQuery(true)
-				->update('#__' . $this->helper->getTable())
-				->set($activecode->field . ' = ' . $db->quote($userinfo->activation))
-				->where($userid->field . ' = ' . $db->quote($existinguser->userid));
+				->update($db->quoteName('#__' . $this->helper->getTable()))
+				->set($db->quoteName($activecode->field) . ' = ' . $db->quote($userinfo->activation))
+				->where($db->quoteName($userid->field) . ' = ' . $db->quote($existinguser->userid));
 
 			$db->setQuery($query);
 			$db->execute();
@@ -519,9 +519,9 @@ class User extends \JFusion\Plugin\User
 			$db = Factory::getDatabase($this->getJname());
 
 			$query = $db->getQuery(true)
-				->update('#__' . $this->helper->getTable())
-				->set($activecode->field . ' = ' . $db->quote($userinfo->activation))
-				->where($userid->field . ' = ' . $db->quote($existinguser->userid));
+				->update($db->quoteName('#__' . $this->helper->getTable()))
+				->set($db->quoteName($activecode->field) . ' = ' . $db->quote($userinfo->activation))
+				->where($db->quoteName($userid->field) . ' = ' . $db->quote($existinguser->userid));
 
 			$db->setQuery($query);
 			$db->execute();
@@ -574,8 +574,8 @@ class User extends \JFusion\Plugin\User
 											$f = $this->helper->getQuery(array('USERID'));
 
 											$query = $db->getQuery(true)
-												->select($f)
-												->from('#__' . $this->helper->getTable())
+												->select($db->quoteName($f))
+												->from($db->quoteName('#__' . $this->helper->getTable()))
 												->order('userid DESC');
 
 											$db->setQuery($query, 0 , 1);

@@ -89,7 +89,7 @@ class Admin extends \JFusion\Plugin\Admin
 
 			$query = $db->getQuery(true)
 				->select($field)
-				->from('#__' . $this->getTablename());
+				->from($db->quoteName('#__' . $this->getTablename()));
 
 			$db->setQuery($query, $limitstart, $limit);
 			$userlist = $db->loadObjectList();
@@ -111,7 +111,7 @@ class Admin extends \JFusion\Plugin\Admin
 
 			$query = $db->getQuery(true)
 				->select('count(*)')
-				->from('#__' . $this->getTablename());
+				->from($db->quoteName('#__' . $this->getTablename()));
 
 			$db->setQuery($query);
 
