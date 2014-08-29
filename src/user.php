@@ -75,13 +75,13 @@ class User extends \JFusion\Plugin\User
 				}
 				$result->block = false;
 
-				if ( isset($result->inactive) ) {
+				if (isset($result->inactive)) {
 					$inactive = $this->helper->getFieldType('INACTIVE');
 					if ($inactive->value['on'] == $result->inactive ) {
 						$result->block = true;
 					}
 				}
-				if ( isset($result->active) ) {
+				if (isset($result->active)) {
 					$active = $this->helper->getFieldType('ACTIVE');
 					if ($active->value['on'] != $result->active ) {
 						$result->block = true;
@@ -89,10 +89,15 @@ class User extends \JFusion\Plugin\User
 				}
 				unset($result->inactive, $result->active);
 
+				$result->groups = array();
+				if (isset($result->group_id)) {
+					$result->groups[] = $result->group_id;
+				}
+
 				$group = $this->helper->getFieldType('GROUP', 'group');
 				$userid = $this->helper->getFieldType('USERID', 'group');
 				$groupt = $this->helper->getTable('group');
-				if ( !isset($result->group_id) && $group && $userid && $groupt ) {
+				if (!isset($result->group_id) && $group && $userid && $groupt) {
 					$field = $this->helper->getQuery(array('GROUP'), 'group');
 
 					$query = $db->getQuery(true)
@@ -101,10 +106,10 @@ class User extends \JFusion\Plugin\User
 						->where($db->quoteName($userid->field) . ' = ' . $db->quote($result->userid));
 
 					$db->setQuery($query);
-					$result2 = $db->loadObject();
+					$groups = $db->loadObjectList();
 
-					if ($result2) {
-						$result->group_id = base64_encode($result2->group_id);
+					foreach($groups as $group) {
+						$result->groups[] = base64_encode($groups->group_id);
 					}
 				}
 				$user = new Userinfo($this->getJname());
@@ -335,7 +340,7 @@ class User extends \JFusion\Plugin\User
 				$db->setQuery($query);
 				$db->execute();
 
-				$this->debugger->addDebug(Text::_('GROUP_UPDATE') . ': ' . base64_decode($existinguser->group_id) . ' -> ' . base64_decode($usergroup));
+				$this->debugger->addDebug(Text::_('GROUP_UPDATE') . ': ' . base64_decode($existinguser->groups[0]) . ' -> ' . base64_decode($usergroup));
 			} else {
 				$maped = $this->helper->getMap('group');
 
@@ -379,7 +384,7 @@ class User extends \JFusion\Plugin\User
 					}
 					$db->insertObject($db->quoteName('#__' . $this->helper->getTable('group')), $addgroup );
 
-					$this->debugger->addDebug(Text::_('GROUP_UPDATE') . ': ' . base64_decode($existinguser->group_id) . ' -> ' . base64_decode($usergroup));
+					$this->debugger->addDebug(Text::_('GROUP_UPDATE') . ': ' . base64_decode($usergroup));
 				}
 			}
 		}
