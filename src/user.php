@@ -194,17 +194,12 @@ class User extends \JFusion\Plugin\User
 	 * @return array|string
 	 */
 	function createSession(Userinfo $userinfo, $options) {
-		$status = array(LogLevel::ERROR => array(), LogLevel::DEBUG => array());
 		//do not create sessions for blocked users
-		if (!empty($userinfo->block) || !empty($userinfo->activation)) {
-			$status[LogLevel::ERROR][] = Text::_('FUSION_BLOCKED_USER');
-		} else {
-			$cookie_backup = $_COOKIE;
-			$_COOKIE = array();
-			$_COOKIE['jfusionframeless'] = true;
-			$status = $this->curlLogin($userinfo, $options, 'no_brute_force');
-			$_COOKIE = $cookie_backup;
-		}
+		$cookie_backup = $_COOKIE;
+		$_COOKIE = array();
+		$_COOKIE['jfusionframeless'] = true;
+		$status = $this->curlLogin($userinfo, $options, 'no_brute_force');
+		$_COOKIE = $cookie_backup;
 		return $status;
 	}
 
