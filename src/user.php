@@ -77,13 +77,13 @@ class User extends \JFusion\Plugin\User
 
 				if (isset($result->inactive)) {
 					$inactive = $this->helper->getFieldType('INACTIVE');
-					if ($inactive->value['on'] == $result->inactive ) {
+					if ($inactive->value->on == $result->inactive ) {
 						$result->block = true;
 					}
 				}
 				if (isset($result->active)) {
 					$active = $this->helper->getFieldType('ACTIVE');
-					if ($active->value['on'] != $result->active ) {
+					if ($active->value->on != $result->active ) {
 						$result->block = true;
 					}
 				}
@@ -406,17 +406,17 @@ class User extends \JFusion\Plugin\User
 			$userStatus = null;
 			if ($userinfo->block) {
 				if ( isset($inactive) ) {
-					$userStatus = $inactive->value['on'];
+					$userStatus = $inactive->value->on;
 				}
 				if ( isset($active) ) {
-					$userStatus = $active->value['off'];
+					$userStatus = $active->value->off;
 				}
 			} else {
 				if ( isset($inactive) ) {
-					$userStatus = $inactive->value['off'];
+					$userStatus = $inactive->value->off;
 				}
 				if ( isset($active) ) {
-					$userStatus = $active->value['on'];
+					$userStatus = $active->value->on;
 				}
 			}
 			if ($userStatus != null) {
@@ -453,8 +453,8 @@ class User extends \JFusion\Plugin\User
 			throw new RuntimeException(Text::_('UNIVERSAL_NO_ACTIVE_OR_INACTIVE_SET'));
 		} else {
 			$userStatus = null;
-			if ( isset($inactive) ) $userStatus = $inactive->value['off'];
-			if ( isset($active) ) $userStatus = $active->value['on'];
+			if ( isset($inactive) ) $userStatus = $inactive->value->off;
+			if ( isset($active) ) $userStatus = $active->value->on;
 
 			$db = Factory::getDatabase($this->getJname());
 
@@ -610,16 +610,16 @@ class User extends \JFusion\Plugin\User
 										break;
 									case 'ACTIVE':
 										if ($userinfo->block){
-											$user->$field = $value->value['off'];
+											$user->$field = $value->value->off;
 										} else {
-											$user->$field = $value->value['on'];
+											$user->$field = $value->value->on;
 										}
 										break;
 									case 'INACTIVE':
 										if ($userinfo->block){
-											$user->$field = $value->value['on'];
+											$user->$field = $value->value->on;
 										} else {
-											$user->$field = $value->value['off'];
+											$user->$field = $value->value->off;
 										}
 										break;
 									case 'PASSWORD':

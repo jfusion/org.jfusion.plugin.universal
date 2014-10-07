@@ -259,15 +259,13 @@ class Admin extends \JFusion\Plugin\Admin
 						} else {
 							$fieldstype = '';
 						}
-						$fieldsvaluearray = array();
+
+						$fieldsvalueobject = new stdClass();
 						$fieldsvalue = '';
 						if ( isset($value->value->{$val->Field}) ) {
 							$fieldsvalue = $value->value->{$val->Field};
-							if (is_array($fieldsvalue)) {
-								$fieldsvaluearray = (array)$fieldsvalue;
-								foreach ($fieldsvaluearray as &$val2) {
-									$val2 = htmlentities($val2);
-								}
+							if (is_object($fieldsvalue)) {
+								$fieldsvalueobject = $fieldsvalue;
 							} else {
 								$fieldsvalue = htmlentities($fieldsvalue);
 							}
@@ -304,7 +302,7 @@ class Admin extends \JFusion\Plugin\Admin
 								$output .= '<input type="text" id="' . $control_name . $name . $type . 'value' . $val->Field . '" name="' . $control_name . '[' . $name . '][' . $type . '][value][' . $val->Field . ']" value="' . $fieldsvalue . '" size="100" class="inputbox" />';
 								break;
 							case 'ONOFF':
-								foreach ($fieldsvaluearray as $key2 => $val2) {
+								foreach ($fieldsvalueobject as $key2 => $val2) {
 									$output .= '<input type="text" id="' . $control_name . $name . $type . 'value' . $val->Field . $key2 . '" name="' . $control_name . '[' . $name . '][' . $type . '][value][' . $val->Field . '][' . $key2 . ']" value="' . $val2 . '" size="40" class="inputbox" />';
 								}
 								break;
