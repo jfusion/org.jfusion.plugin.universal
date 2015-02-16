@@ -10,6 +10,8 @@
  */
 
 use JFusion\User\Userinfo;
+use Joomla\Language\Text;
+use RuntimeException;
 
 /**
  * JFusion Auth Class for universal
@@ -25,22 +27,51 @@ use JFusion\User\Userinfo;
  */
 class Auth extends \JFusion\Plugin\Auth
 {
-    /**
-     * @param Userinfo $userinfo
-     * @return string
-     */
-    function generateEncryptedPassword(Userinfo $userinfo)
-    {
+	/**
+	 * @var $helper Helper
+	 */
+	var $helper;
+
+	/**
+	 * @param Userinfo $userinfo
+	 *
+	 * @return string
+	 * @throws RuntimeException
+	 */
+	function generateEncryptedPassword($userinfo)
+	{
+		$testcrypt = null;
+		$password = $this->helper->getFieldType('PASSWORD');
+		if(empty($password)) {
+			throw new RuntimeException(Text::_('UNIVERSAL_NO_PASSWORD_SET'));
+		} else {
+			$testcrypt = $this->helper->getHashedPassword($password->fieldtype, $password->value, $userinfo);
+		}
+		return $testcrypt;
+	}
+
+	/**
+	 * used by framework to ensure a password test
+	 *
+	 * @param Userinfo $userinfo userdata object containing the userdata
+	 *
+	 * @return boolean
+	 */
+	function checkPassword($userinfo) {
 		$user_auth = $this->params->get('user_auth');
 
-		$user_auth = rtrim(trim($user_auth),';');
-    	ob_start();
-		$testcrypt = eval('return '. $user_auth . ';');
+		$user_auth = rtrim(trim($user_auth), ';');
+		ob_start();
+		$check = eval($user_auth . ';');
 		$error = ob_get_contents();
 		ob_end_clean();
-		if ($testcrypt===false && strlen($error)) {
+		if ($check===false && strlen($error)) {
 			die($error);
 		}
-        return $testcrypt;
-    }
+		if ($check === true) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
