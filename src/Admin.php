@@ -235,10 +235,10 @@ class Admin extends \JFusion\Plugin\Admin
 
 				$output .= '<table>';
 				$output .= '<tr><td>';
-				$output .= Select::genericlist( $tl, $control_name . '[' . $name . '][' . $type . '][table]', 'onchange="javascript: Joomla.submitbutton(\'applyconfig\')"', 'id', 'name', $value->table);
+				$output .= Select::genericlist($tl, $control_name . '[' . $name . '][' . $type . '][table]', 'onchange="javascript: Joomla.submitbutton(\'applyconfig\')"', 'id', 'name', $value->table);
 				$output .= '</td></tr>';
 				$output .= '<tr><td>';
-				if (!empty($value->table) ) {
+				if (!empty($value->table)) {
 					$output .= '<table>';
 					foreach ($mapuser as $val) {
 						$output .= '<tr><td>';
@@ -249,12 +249,12 @@ class Admin extends \JFusion\Plugin\Admin
 						$null = $val->Null ? Text::_('YES') : Text::_('NO');
 						$output .= '<div>Null: ' . $null . '</div>';
 						$output .= '<div>Extra: "' . $val->Extra . '" </div></td><td>';
-						if ( isset($value->field->{$val->Field}) ) {
+						if (isset($value->field->{$val->Field})) {
 							$mapuserfield = $value->field->{$val->Field};
 						} else {
 							$mapuserfield = '';
 						}
-						if ( isset($value->type->{$val->Field}) ) {
+						if (isset($value->type->{$val->Field})) {
 							$fieldstype = $value->type->{$val->Field};
 						} else {
 							$fieldstype = '';
@@ -262,7 +262,7 @@ class Admin extends \JFusion\Plugin\Admin
 
 						$fieldsvalueobject = new stdClass();
 						$fieldsvalue = '';
-						if ( isset($value->value->{$val->Field}) ) {
+						if (isset($value->value->{$val->Field})) {
 							$fieldsvalue = $value->value->{$val->Field};
 							if (is_object($fieldsvalue)) {
 								$fieldsvalueobject = $fieldsvalue;
@@ -284,7 +284,7 @@ class Admin extends \JFusion\Plugin\Admin
 						if (isset($mapuserfield[0])) {
 							if (isset($fieldtypes[$mapuserfield[0]])) {
 								if (isset($fieldtypes[$mapuserfield[0]]->types)) {
-									$output .= Select::genericlist( $fieldtypes[$mapuserfield[0]]->types, $control_name . '[' . $name . '][' . $type . '][type][' . $val->Field . ']', $onchange, 'id', 'name', $fieldstype);
+									$output .= Select::genericlist($fieldtypes[$mapuserfield[0]]->types, $control_name . '[' . $name . '][' . $type . '][type][' . $val->Field . ']', $onchange, 'id', 'name', $fieldstype);
 								}
 							}
 						}
@@ -475,7 +475,7 @@ class Admin extends \JFusion\Plugin\Admin
 					'size': 100,
 					'value': value == 'DATE' ? 'Y-m-d H:i:s' : ''
             	}));
-            } else if ( value == 'ONOFF') {
+            } else if (value == 'ONOFF') {
                 id.appendChild(new Element('input', {
 					'type': 'text',
 					'id': 'paramsmap'+parmtype+'value'+name+'on',
@@ -521,7 +521,6 @@ JS;
 	 */
 	function debugConfigExtra()
 	{
-
 		$usertable = $this->helper->getTable();
 		if ($usertable) {
 			$userid = $this->helper->getFieldType('USERID');
@@ -530,15 +529,15 @@ JS;
 
 			$email = $this->helper->getFieldType('EMAIL');
 
-			if ( !$userid ) {
+			if (!$userid) {
 				Framework::raise(LogLevel::WARNING, Text::_('NO_USERID_DEFINED'), $this->getJname());
 			}
 
-			if ( !$email ) {
+			if (!$email) {
 				Framework::raise(LogLevel::WARNING, Text::_('NO_EMAIL_DEFINED'), $this->getJname());
 			}
 
-			if ( !$username ) {
+			if (!$username) {
 				Framework::raise(LogLevel::WARNING, Text::_('NO_USERNAME_DEFINED'), $this->getJname());
 			}
 			$grouptable = $this->helper->getTable('group');
@@ -546,10 +545,10 @@ JS;
 				$group_userid = $this->helper->getFieldType('USERID', 'group');
 				$group_group = $this->helper->getFieldType('GROUP', 'group');
 
-				if ( !$group_userid ) {
+				if (!$group_userid) {
 					Framework::raise(LogLevel::WARNING, Text::_('NO_GROUP_USERID_DEFINED'), $this->getJname());
 				}
-				if ( !$group_group ) {
+				if (!$group_group) {
 					Framework::raise(LogLevel::WARNING, Text::_('NO_GROUP_GROUPID_DEFINED'), $this->getJname());
 				}
 			}
@@ -560,5 +559,99 @@ JS;
 		} else {
 			Framework::raise(LogLevel::WARNING, Text::_('NO_USERTABLE_DEFINED'), $this->getJname());
 		}
+	}
+
+	/**
+	 * create the render group function
+	 *
+	 * @return string
+	 */
+	function getRenderGroup()
+	{
+		$jname = $this->getJname();
+
+		if ($this->helper->isDualGroup()) {
+			$js = <<<JS
+		JFusion.renderPlugin['{$jname}'] = function(index, plugin, pair, usergroups) {
+			return (function( $ ) {
+				var root = $('<div></div>');
+
+				var defaultgroup = $(pair).prop('defaultgroup');
+				var groups = $(pair).prop('groups');
+
+				// render default group
+				root.append($('<div>' + JFusion.Text._('MAIN_USERGROUP') + '</div>'));
+
+				var defaultselect = $('<select></select>');
+				defaultselect.attr('name', 'usergroups['+plugin.name+']['+index+'][defaultgroup]');
+				defaultselect.attr('id', 'usergroups_'+plugin.name+index+'defaultgroup');
+
+				defaultselect.change(function() {
+	                var value = $(this).val();
+
+					$('#'+'usergroups_'+plugin.name+index+'groups'+' option').each(function() {
+						if ($(this).val() == value) {
+							$(this).prop('selected', false);
+							$(this).prop('disabled', true);
+
+							$(this).trigger('chosen:updated').trigger('liszt:updated');
+		                } else if ($(this).prop('disabled') === true) {
+							$(this).prop('disabled', false);
+							$(this).trigger('chosen:updated').trigger('liszt:updated');
+						}
+					});
+				});
+
+	            $.each(usergroups, function( key, group ) {
+	                var options = $('<option></option>');
+					options.val(group.id);
+	                options.html(group.name);
+
+			        if (pair && defaultgroup && defaultgroup == group.id) {
+						options.attr('selected','selected');
+			        }
+
+					defaultselect.append(options);
+	            });
+
+			    root.append(defaultselect);
+
+				// render default member groups
+				root.append($('<div>' + JFusion.Text._('MEMBERGROUPS') + '</div>'));
+
+				var membergroupsselect = $('<select></select>');
+				membergroupsselect.attr('name', 'usergroups['+plugin.name+']['+index+'][groups][]');
+				membergroupsselect.attr('id', 'usergroups_'+plugin.name+index+'groups');
+				membergroupsselect.attr('multiple', 'multiple');
+
+	            $.each(usergroups, function( i, group ) {
+	                var options = $('<option></option>');
+					options.val(group.id);
+	                options.html(group.name);
+
+			        if (pair && defaultgroup == group.id) {
+			            options.attr('disabled', 'disabled');
+			        } else if (!pair && i === 0) {
+			            options.attr('disabled', 'disabled');
+			        } else {
+			            if (pair && groups && $.inArray(group.id, groups) >= 0) {
+			                options.attr('selected', 'selected');
+			            }
+			        }
+
+					membergroupsselect.append(options);
+	            });
+
+			    root.append(membergroupsselect);
+			    return root;
+			})(jQuery);
+		};
+JS;
+		} else {
+			$js = <<<JS
+			JFusion.renderPlugin['{$jname}'] = JFusion.renderDefault;
+JS;
+		}
+		return $js;
 	}
 }

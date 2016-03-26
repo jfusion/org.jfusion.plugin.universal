@@ -47,15 +47,15 @@ class Helper extends Plugin
 	 * @return bool|stdClass
 	 */
 	function getMapRaw($type = 'user') {
-		if( !is_array($this->mapraw) ) {
+		if(!is_array($this->mapraw)) {
 			$map = $this->params->get('map', false);
 			if(is_object($map)) {
 				$this->mapraw = $map;
 			}
 		}
 
-		if(is_object($this->mapraw) ) {
-			if(isset($this->mapraw->$type) && is_object($this->mapraw->$type) ) {
+		if(is_object($this->mapraw)) {
+			if(isset($this->mapraw->$type) && is_object($this->mapraw->$type)) {
 				return $this->mapraw->$type;
 			}
 		}
@@ -67,7 +67,7 @@ class Helper extends Plugin
 	 * @return array
 	 */
 	function getMap($type = 'user') {
-		if( !isset($this->map[$type]) ) {
+		if(!isset($this->map[$type])) {
 			$map = $this->getMapRaw($type);
 
 			if(is_object($map) && isset($map->field)) {
@@ -90,7 +90,7 @@ class Helper extends Plugin
 				}
 			}
 		}
-		if( is_array($this->map) && isset($this->map[$type]) && is_array($this->map[$type]) ) {
+		if(is_array($this->map) && isset($this->map[$type]) && is_array($this->map[$type])) {
 			return $this->map[$type];
 		}
 		return array();
@@ -107,7 +107,7 @@ class Helper extends Plugin
 		$map = $this->getMap($type);
 		foreach ($map as $value) {
 			foreach ($value->type as $t) {
-				if ( in_array($t, $include) ) {
+				if (in_array($t, $include)) {
 					switch ($t) {
 						case 'LASTVISIT':
 							$query[] = $value->field . ' as lastvisit';
@@ -180,7 +180,7 @@ class Helper extends Plugin
 	function getType($t = null) {
 		static $types = null;
 
-		if ( !is_array($types) ) {
+		if (!is_array($types)) {
 			$types = array();
 			$type = new stdClass;
 			$type->name = $type->id = 'MD5_SALT';
@@ -244,7 +244,7 @@ class Helper extends Plugin
 	function getField($field = null) {
 		static $fields;
 
-		if ( !is_array($fields) ) {
+		if (!is_array($fields)) {
 			$defaulttype = new stdClass;
 			$defaulttype->id = '';
 			$defaulttype->name = Text::_('CHANGE_ME');
@@ -343,7 +343,7 @@ class Helper extends Plugin
 	 *
 	 * @return int|null|string
 	 */
-	function getValue($type, $value, $userinfo = null ) {
+	function getValue($type, $value, $userinfo = null) {
 		$out = '';
 		$value = html_entity_decode($value);
 		switch ($type) {
@@ -414,5 +414,18 @@ class Helper extends Plugin
 			}
 		}
 		return $out;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	function isDualGroup() {
+		$userGroup = $this->getFieldType('GROUP');
+		$groupGroup = $this->getFieldType('GROUP', 'group');
+		if (isset($userGroup) && isset($groupGroup)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
